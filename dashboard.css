@@ -1,0 +1,127 @@
+/* Facebook-style Dashboard Styles */
+.dashboard-container {
+  background-color: #f0f2f5;
+  min-height: 100vh;
+}
+
+/* Custom scrollbar for Facebook feel */
+.dashboard-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.dashboard-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.dashboard-container::-webkit-scrollbar-thumb {
+  background: #bcc0c4;
+  border-radius: 4px;
+}
+
+.dashboard-container::-webkit-scrollbar-thumb:hover {
+  background: #8a8d91;
+}
+
+/* Facebook-like shadows */
+.facebook-shadow {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Hover effects */
+.hover-lift {
+  transition: all 0.2s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Gradient text for EmpowerAbility branding */
+.gradient-text {
+  background: linear-gradient(135deg, #1877f2 0%, #42b72a 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Responsive design */
+@media (max-width: 1024px) {
+  .dashboard-container {
+    padding: 0 8px;
+  }
+}
+
+/* Accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
+  .hover-lift {
+    transition: none;
+  }
+  
+  .hover-lift:hover {
+    transform: none;
+  }
+}
+
+/* Mobile-specific styles */
+@media (max-width: 640px) {
+  .dashboard-container {
+    padding-bottom: 80px; /* Space for bottom navigation */
+  }
+  
+  /* Improve touch targets */
+  button, [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Tablet styles */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .dashboard-container {
+    padding: 0 16px;
+  }
+}
+
+/* Hide scrollbar on mobile but keep functionality */
+@media (max-width: 768px) {
+  .overflow-x-auto {
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .overflow-x-auto::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Enhanced Sidebar Styles */
+.sidebar-section {
+  transition: all 0.3s ease;
+}
+
+.sidebar-section:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+/* Scrollable sidebar content */
+.sidebar-scroll {
+  max-height: calc(100vh - 200px);
+  overflow-y: auto;
+}
+
+.sidebar-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+
+.sidebar-scroll::-webkit-scrollbar-thumb {
+  background: #cbd5e0;
+  border-radius: 2px;
+}
+
+/* Mobile sidebar improvements */
+@media (max-width: 1024px) {
+  .sidebar-section {
+    margin-bottom: 16px;
+  }
+}

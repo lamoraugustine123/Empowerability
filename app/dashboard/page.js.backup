@@ -1,0 +1,374 @@
+'use client';
+import { useState, useEffect } from 'react';
+import { useAuth } from '../context/AuthContext';
+
+export default function Dashboard() {
+  const { user } = useAuth();
+  const [posts, setPosts] = useState([]);
+  const [stories, setStories] = useState([]);
+  const [activeTab, setActiveTab] = useState('home');
+
+  // Mock data for Instagram-like features
+  useEffect(() => {
+    // Sample stories
+    const sampleStories = [
+      {
+        id: 1,
+        user: {
+          name: 'Your Story',
+          username: user?.username || 'yourusername',
+          avatar: user?.name?.charAt(0) || 'U',
+          isYourStory: true,
+          hasNewStory: true
+        }
+      },
+      {
+        id: 2,
+        user: {
+          name: 'Sarah',
+          username: 'sarahj',
+          avatar: 'S',
+          isYourStory: false,
+          hasNewStory: true
+        }
+      },
+      {
+        id: 3,
+        user: {
+          name: 'Mike',
+          username: 'mikec',
+          avatar: 'M',
+          isYourStory: false,
+          hasNewStory: false
+        }
+      },
+      {
+        id: 4,
+        user: {
+          name: 'Emily',
+          username: 'emilyd',
+          avatar: 'E',
+          isYourStory: false,
+          hasNewStory: true
+        }
+      },
+      {
+        id: 5,
+        user: {
+          name: 'Alex',
+          username: 'alexr',
+          avatar: 'A',
+          isYourStory: false,
+          hasNewStory: false
+        }
+      },
+      {
+        id: 6,
+        user: {
+          name: 'Priya',
+          username: 'priyap',
+          avatar: 'P',
+          isYourStory: false,
+          hasNewStory: true
+        }
+      }
+    ];
+
+    // Sample posts
+    const samplePosts = [
+      {
+        id: 1,
+        user: {
+          name: 'Sarah',
+          username: 'sarahj',
+          avatar: 'S',
+          verified: true
+        },
+        image: 'https://images.unsplash.com/photo-1579546929662-711aa81148cf?w=500',
+        caption: 'Beautiful sunset from my window 🌅 #sunset #view',
+        timestamp: '2 HOURS AGO',
+        likes: 245,
+        comments: 34,
+        isLiked: false,
+        isSaved: false
+      },
+      {
+        id: 2,
+        user: {
+          name: 'Mike',
+          username: 'mikec',
+          avatar: 'M',
+          verified: false
+        },
+        image: 'https://images.unsplash.com/photo-1551963831-b3b1ca40c98e?w=500',
+        caption: 'Morning coffee and coding ☕💻 #developerlife #coffee',
+        timestamp: '4 HOURS AGO',
+        likes: 512,
+        comments: 67,
+        isLiked: true,
+        isSaved: true
+      },
+      {
+        id: 3,
+        user: {
+          name: 'Tech News',
+          username: 'technews',
+          avatar: 'T',
+          verified: true
+        },
+        image: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=500',
+        caption: 'New accessibility features announced for mobile devices! ♿ #accessibility #tech',
+        timestamp: '6 HOURS AGO',
+        likes: 892,
+        comments: 128,
+        isLiked: false,
+        isSaved: false
+      },
+      {
+        id: 4,
+        user: {
+          name: 'Emily',
+          username: 'emilyd',
+          avatar: 'E',
+          verified: false
+        },
+        image: 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=500',
+        caption: 'Weekend vibes 🌿 #nature #weekend',
+        timestamp: '1 DAY AGO',
+        likes: 324,
+        comments: 45,
+        isLiked: false,
+        isSaved: true
+      }
+    ];
+
+    setStories(sampleStories);
+    setPosts(samplePosts);
+  }, [user]);
+
+  const handleLike = (postId) => {
+    setPosts(prev => prev.map(post => 
+      post.id === postId 
+        ? { 
+            ...post, 
+            likes: post.isLiked ? post.likes - 1 : post.likes + 1,
+            isLiked: !post.isLiked
+          }
+        : post
+    ));
+  };
+
+  const handleSave = (postId) => {
+    setPosts(prev => prev.map(post => 
+      post.id === postId 
+        ? { ...post, isSaved: !post.isSaved }
+        : post
+    ));
+  };
+
+  const handleAddComment = (postId, comment) => {
+    setPosts(prev => prev.map(post => 
+      post.id === postId 
+        ? { ...post, comments: post.comments + 1 }
+        : post
+    ));
+  };
+
+  return (
+    <div className="min-h-screen bg-white">
+      {/* Instagram Header */}
+      <header className="fixed top-0 left-0 right-0 bg-white border-b border-gray-300 z-50">
+        <div className="max-w-3xl mx-auto px-4 py-3">
+          <div className="flex items-center justify-between">
+            {/* Left: Instagram Logo */}
+            <div className="flex items-center space-x-2">
+              <div className="text-2xl font-instagram">📸</div>
+              <div className="h-8 w-px bg-gray-300 mx-2"></div>
+              <h1 className="text-xl font-bold bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent">
+                Instagram
+              </h1>
+            </div>
+
+            {/* Right: Actions */}
+            <div className="flex items-center space-x-4">
+              <button className="w-6 h-6">
+                <span className="text-xl">➕</span>
+              </button>
+              <button className="w-6 h-6">
+                <span className="text-xl">💬</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <div className="max-w-3xl mx-auto pt-16 pb-20">
+        {/* Stories Section */}
+        <div className="px-4 py-3 border-b border-gray-300 overflow-x-auto">
+          <div className="flex space-x-4">
+            {stories.map((story) => (
+              <div key={story.id} className="flex flex-col items-center space-y-2">
+                <div className={`w-16 h-16 rounded-full p-0.5 ${
+                  story.user.hasNewStory 
+                    ? 'bg-gradient-to-tr from-yellow-400 to-purple-600' 
+                    : 'bg-gray-300'
+                }`}>
+                  <div className="w-full h-full bg-white rounded-full p-0.5">
+                    <div className="w-full h-full bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                      {story.user.avatar}
+                    </div>
+                  </div>
+                </div>
+                <p className="text-xs text-gray-600 max-w-16 truncate">
+                  {story.user.isYourStory ? 'Your Story' : story.user.name}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Posts Feed */}
+        <div className="divide-y divide-gray-300">
+          {posts.map((post) => (
+            <div key={post.id} className="py-4">
+              {/* Post Header */}
+              <div className="px-4 py-2 flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                    {post.user.avatar}
+                  </div>
+                  <div>
+                    <div className="flex items-center space-x-1">
+                      <span className="font-semibold text-sm">{post.user.name}</span>
+                      {post.user.verified && (
+                        <span className="text-blue-500 text-xs">✓</span>
+                      )}
+                    </div>
+                    <p className="text-xs text-gray-500">{post.user.username}</p>
+                  </div>
+                </div>
+                <button className="text-gray-600">
+                  <span className="text-xl">⋯</span>
+                </button>
+              </div>
+
+              {/* Post Image */}
+              <div className="aspect-square bg-gray-200 relative">
+                <div 
+                  className="w-full h-full bg-cover bg-center"
+                  style={{ backgroundImage: `url(${post.image})` }}
+                />
+                
+                {/* Like double-tap area (for mobile interaction) */}
+                <div 
+                  className="absolute inset-0 cursor-pointer"
+                  onDoubleClick={() => handleLike(post.id)}
+                />
+              </div>
+
+              {/* Post Actions */}
+              <div className="px-4 py-3">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center space-x-4">
+                    <button 
+                      onClick={() => handleLike(post.id)}
+                      className={`text-2xl transition-transform hover:scale-110 ${
+                        post.isLiked ? 'text-red-500' : 'text-gray-900'
+                      }`}
+                    >
+                      {post.isLiked ? '❤️' : '🤍'}
+                    </button>
+                    <button className="text-2xl transition-transform hover:scale-110">
+                      💬
+                    </button>
+                    <button className="text-2xl transition-transform hover:scale-110">
+                      📤
+                    </button>
+                  </div>
+                  <button 
+                    onClick={() => handleSave(post.id)}
+                    className={`text-2xl transition-transform hover:scale-110 ${
+                      post.isSaved ? 'text-black' : 'text-gray-900'
+                    }`}
+                  >
+                    {post.isSaved ? '📑' : '📄'}
+                  </button>
+                </div>
+
+                {/* Likes */}
+                <div className="mb-2">
+                  <p className="text-sm font-semibold">{post.likes.toLocaleString()} likes</p>
+                </div>
+
+                {/* Caption */}
+                <div className="mb-1">
+                  <p className="text-sm">
+                    <span className="font-semibold mr-2">{post.user.username}</span>
+                    {post.caption}
+                  </p>
+                </div>
+
+                {/* View Comments */}
+                {post.comments > 0 && (
+                  <button className="text-gray-500 text-sm mb-2">
+                    View all {post.comments} comments
+                  </button>
+                )}
+
+                {/* Timestamp */}
+                <p className="text-gray-500 text-xs uppercase">{post.timestamp}</p>
+
+                {/* Add Comment */}
+                <div className="flex items-center space-x-2 mt-3 pt-3 border-t border-gray-300">
+                  <div className="flex-1">
+                    <input
+                      type="text"
+                      placeholder="Add a comment..."
+                      className="w-full bg-transparent text-sm focus:outline-none placeholder-gray-500"
+                      onKeyPress={(e) => {
+                        if (e.key === 'Enter' && e.target.value.trim()) {
+                          handleAddComment(post.id, e.target.value);
+                          e.target.value = '';
+                        }
+                      }}
+                    />
+                  </div>
+                  <button className="text-blue-500 text-sm font-semibold opacity-50">
+                    Post
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Instagram Bottom Navigation */}
+      <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-300">
+        <div className="max-w-3xl mx-auto px-4 py-2">
+          <div className="flex items-center justify-between">
+            {[
+              { icon: '🏠', label: 'Home', active: activeTab === 'home' },
+              { icon: '🔍', label: 'Search', active: activeTab === 'search' },
+              { icon: '➕', label: 'Add', active: activeTab === 'add' },
+              { icon: '🎥', label: 'Reels', active: activeTab === 'reels' },
+              { icon: '👤', label: 'Profile', active: activeTab === 'profile' }
+            ].map((item) => (
+              <button
+                key={item.label}
+                onClick={() => setActiveTab(item.label.toLowerCase())}
+                className={`flex flex-col items-center space-y-1 p-2 ${
+                  item.active ? 'text-black' : 'text-gray-600'
+                }`}
+              >
+                <span className="text-2xl">{item.icon}</span>
+                <span className="text-xs">{item.label}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      </nav>
+    </div>
+  );
+}

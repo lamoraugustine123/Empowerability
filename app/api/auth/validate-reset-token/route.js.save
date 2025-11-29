@@ -1,0 +1,75 @@
+import { NextResponse } from 'next/server'
+
+export async function GET(request) {
+  const { searchParams } = new URL(request.url)
+  const token = searchParams.get('token')
+
+  if (!token) {
+    return NextResponse.json(
+      { message: 'Reset token is required' },
+      { status: 400 }
+    )
+  }
+
+  try {
+    // Verify the token (you'll need to implement this based on your auth system)
+    const isValid = await verifyResetToken(token)
+    
+    if (!isValid) {
+      return NextResponse.json(
+        { message: 'Invalid or expired reset token' },
+        { status: 400 }
+      )
+    }
+
+    // Return user email associated with the token
+    const userEmail = await getUserEmailFromToken(token)
+    
+    return NextResponse.json({
+      valid: true,
+      email: userEmail,
+      message: 'Token is valid'
+    })
+
+  } catch (error) {
+    return NextResponse.json(
+      { message: 'Error validating token' },
+      { status: 500 }
+    )
+  }
+}
+
+// These functions depend on your authentication system
+async function verifyResetToken(token) {
+  // TODO: Implement based on your database
+  // Example with Prisma:
+  /*
+  const resetToken = await prisma.passwordResetToken.findUnique({
+    where: { token },
+    select: { expires: true, used: true }
+  })
+  
+  return resetToken && 
+         resetToken.expires > new Date() && 
+         !resetToken.used
+  */
+  
+  // For now, return true to test
+  return true
+}
+
+async function getUserEmailFromToken(token) {
+  // TODO: Implement based on your database
+  // Example with Prisma:
+  /*
+  const resetToken = await prisma.passwordResetToken.findUnique({
+    where: { token },
+    include: { user: { select: { email: true } } }
+  })
+  
+  return resetToken?.user?.email
+  */
+  
+  // For now, return a dummy email to test
+  return "user@example.com"
+}
