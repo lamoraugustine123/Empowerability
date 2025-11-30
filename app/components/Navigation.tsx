@@ -219,7 +219,7 @@ export default function Navigation() {
       />
 
       <SignupModal
-        isOpen={showSignup}
+         
         onClose={() => setShowSignup(false)}
         onSwitchToLogin={() => {
           setShowSignup(false);
