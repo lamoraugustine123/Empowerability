@@ -152,6 +152,8 @@ export default function SignupModal({ isOpen, onClose, onSwitchToLogin, onSignup
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
+
+        </form>
         </div>
 
         <p style={{ color: '#6b7280', marginBottom: '1.5rem' }}>
@@ -502,6 +504,8 @@ export default function SignupModal({ isOpen, onClose, onSwitchToLogin, onSignup
           >
             {isLoading ? 'Creating your profile...' : 'Create Complete Profile'}
           </button>
+
+        </form>
         </form>
 
         <div style={{ textAlign: 'center', marginTop: '1.5rem' }}>
@@ -516,6 +520,7 @@ export default function SignupModal({ isOpen, onClose, onSwitchToLogin, onSignup
           </p>
         </div>
       </div>
+        </form>
     </div>
   );
 }
