@@ -1,0 +1,691 @@
+'use client';
+import { useState, useEffect } from 'react';
+import { useAuth } from '../context/AuthContext';
+import DashboardStories from "./components/DashboardStories";
+import CreateShortModal from './components/CreateShortModal';
+
+export default function Dashboard() {
+  const { user } = useAuth();
+  const [posts, setPosts] = useState([]);
+  const [showShortModal, setShowShortModal] = useState(false);
+  const [newPostText, setNewPostText] = useState('');
+  const [commentTexts, setCommentTexts] = useState({});
+  const [activeCommentPost, setActiveCommentPost] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [onlineUsers, setOnlineUsers] = useState(3);
+
+  // Mock data for Facebook-style posts
+  useEffect(() => {
+    const samplePosts = [
+      {
+        id: 1,
+        user: {
+          name: 'Sarah Johnson',
+          avatar: 'SJ',
+          role: 'Wheelchair User & Advocate',
+          timestamp: '2 hrs ago'
+        },
+        content: 'Just discovered an amazing accessible coffee shop downtown! Full ramp access, spacious seating, and amazing staff. #AccessibilityWin #WheelchairLife',
+        image: 'https://images.unsplash.com/photo-1579546929662-711aa81148cf?w=500',
+        likes: 24,
+        comments: 8,
+        shares: 3,
+        isLiked: false,
+        type: 'post',
+        commentsList: [
+          { id: 1, user: 'Mike Chen', text: 'That\'s amazing! Where is it located?', time: '1 hr ago' },
+          { id: 2, user: 'Lisa Park', text: 'I\'ve been there! The staff is wonderful.', time: '45 min ago' }
+        ]
+      },
+      {
+        id: 2,
+        user: {
+          name: 'Mike Chen',
+          avatar: 'MC',
+          role: 'Visual Impairment Community',
+          timestamp: '4 hrs ago'
+        },
+        content: 'Sharing some great screen reader tips I learned in our support group meeting yesterday. DM me if you want the full notes! #BlindCommunity #TechTips',
+        image: 'https://images.unsplash.com/photo-1551963831-b3b1ca40c98e?w=500',
+        likes: 31,
+        comments: 12,
+        shares: 5,
+        isLiked: true,
+        type: 'post',
+        commentsList: [
+          { id: 1, user: 'David Kim', text: 'Would love the notes! Thanks Mike!', time: '3 hrs ago' }
+        ]
+      }
+    ];
+
+    setPosts(samplePosts);
+    setIsLoading(false);
+
+    // Simulate real-time online users update
+    const interval = setInterval(() => {
+      setOnlineUsers(prev => {
+        const change = Math.random() > 0.5 ? 1 : -1;
+        const newCount = prev + change;
+        return Math.max(2, Math.min(newCount, 10));
+      });
+    }, 10000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  // Enhanced real-time like functionality with API integration
+  const handleLike = async (postId) => {
+    console.log("Liking post:", postId);
+    
+    const currentPost = posts.find(p => p.id === postId);
+    if (!currentPost) return;
+
+    // Optimistic update first
+    setPosts(prev => prev.map(post => 
+      post.id === postId 
+        ? { 
+            ...post, 
+            likes: post.isLiked ? post.likes - 1 : post.likes + 1,
+            isLiked: !post.isLiked
+          }
+        : post
+    ));
+
+    // Then make API call
+    try {
+      const response = await fetch("/api/posts/like", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          postId: postId,
+          userId: user?.id,
+          action: currentPost.isLiked ? "unlike" : "like"
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update like");
+      }
+
+      const data = await response.json();
+      console.log("Like updated:", data);
+
+      // If needed, sync with server response
+      if (data.likes !== undefined) {
+        setPosts(prev => prev.map(post => 
+          post.id === postId 
+            ? { ...post, likes: data.likes }
+            : post
+        ));
+      }
+
+    } catch (error) {
+      console.error("Error:", error);
+      // Revert optimistic update on error
+      setPosts(prev => prev.map(post => 
+        post.id === postId 
+          ? { 
+              ...post, 
+              likes: currentPost.likes,
+              isLiked: currentPost.isLiked
+            }
+          : post
+      ));
+      alert("Failed to update like. Please try again.");
+    }
+  };
+
+  // Real-time comment functionality
+  const handleAddComment = async (postId) => {
+    const commentText = commentTexts[postId] || "";
+    if (!commentText.trim() || !user) return;
+
+    console.log("Adding comment to post:", postId, commentText);
+
+    // Clear input
+    setCommentTexts(prev => ({ ...prev, [postId]: "" }));
+    setActiveCommentPost(null);
+
+    // Create new comment object
+    const newComment = {
+      id: Date.now(),
+      user: user.name || "You",
+      text: commentText,
+      time: "Just now",
+      avatar: user.name?.charAt(0) || "U"
+    };
+
+    // Optimistic update
+    setPosts(prev => prev.map(post => {
+      if (post.id === postId) {
+        const updatedComments = [...(post.commentsList || []), newComment];
+        return {
+          ...post,
+          comments: (post.comments || 0) + 1,
+          commentsList: updatedComments
+        };
+      }
+      return post;
+    }));
+
+    try {
+      const response = await fetch("/api/posts/comment", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          postId: postId,
+          userId: user.id,
+          content: commentText,
+          userName: user.name || "Anonymous",
+          userAvatar: user.name?.charAt(0) || "A"
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to add comment");
+      }
+
+      const data = await response.json();
+      console.log("Comment added:", data);
+
+      // Update with server response if needed
+      if (data.comment) {
+        setPosts(prev => prev.map(post => {
+          if (post.id === postId) {
+            const updatedComments = [...(post.commentsList || []).slice(0, -1), data.comment];
+            return {
+              ...post,
+              commentsList: updatedComments
+            };
+          }
+          return post;
+        }));
+      }
+
+    } catch (error) {
+      console.error("Error:", error);
+      // Revert optimistic update
+      setPosts(prev => prev.map(post => {
+        if (post.id === postId) {
+          const revertedComments = (post.commentsList || []).slice(0, -1);
+          return {
+            ...post,
+            comments: (post.comments || 0) - 1,
+            commentsList: revertedComments
+          };
+        }
+        return post;
+      }));
+      alert("Failed to add comment. Please try again.");
+    }
+  };
+
+  // Real-time share functionality
+  // Real-time share functionality
+  const handleShare = async (postId) => {
+    console.log("Sharing post:", postId);
+    
+    const currentPost = posts.find(p => p.id === postId);
+    if (!currentPost) return;
+
+    // Optimistic update
+    setPosts(prev => prev.map(post => {
+      if (post.id === postId) {
+        return {
+          ...post,
+          shares: (post.shares || 0) + 1
+        };
+      }
+      return post;
+    }));
+
+    try {
+      const response = await fetch("/api/posts/share", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ 
+          postId: postId, 
+          userId: user?.id 
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to share post");
+      }
+
+      const data = await response.json();
+      console.log("Post shared:", data);
+      
+      // Create share URL
+      const shareUrl = window.location.origin + "/post/" + postId;
+      
+      // Try Web Share API first (mobile devices)
+      if (navigator.share) {
+        try {
+          await navigator.share({
+            title: "Check out this post from EmpowerAbility",
+            text: currentPost.content.substring(0, 100) + "...",
+            url: shareUrl,
+          });
+        } catch (shareError) {
+          console.log("Web Share cancelled or failed:", shareError);
+          // Fall back to clipboard
+          copyToClipboard(shareUrl);
+        }
+      } else {
+        // Fall back to clipboard for desktop
+        copyToClipboard(shareUrl);
+      }
+
+    } catch (error) {
+      console.error("Error sharing post:", error);
+      // Revert optimistic update
+      setPosts(prev => prev.map(post => {
+        if (post.id === postId) {
+          return {
+            ...post,
+            shares: (post.shares || 0) - 1
+          };
+        }
+        return post;
+      }));
+      alert("Failed to share post. Please try again.");
+    }
+  };
+
+  // Handle comment text change
+  const handleCommentChange = (postId, text) => {
+    setCommentTexts(prev => ({ ...prev, [postId]: text }));
+  };
+
+  // Toggle comment input visibility
+  const toggleCommentInput = (postId) => {
+    setActiveCommentPost(activeCommentPost === postId ? null : postId);
+  };
+
+  // Quick post creation (existing but enhanced)
+  const handleCreatePost = () => {
+    if (!newPostText.trim()) return;
+
+    const newPost = {
+      id: Date.now(),
+      user: {
+        name: user?.name || 'You',
+        avatar: user?.name?.charAt(0) || 'U',
+        role: user?.role || 'Community Member',
+        timestamp: 'Just now'
+      },
+      content: newPostText,
+      image: null,
+      likes: 0,
+      comments: 0,
+      shares: 0,
+      isLiked: false,
+      type: 'post',
+      commentsList: []
+    };
+
+    setPosts(prev => [newPost, ...prev]);
+    setNewPostText('');
+    
+    // API call to save post
+    fetch("/api/posts/create", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        content: newPostText,
+        userId: user?.id
+      }),
+    }).catch(error => console.error("Error creating post:", error));
+  };
+
+  const handleCreateShort = (shortData) => {
+    const newPost = {
+      id: Date.now(),
+      user: {
+        name: user?.name || 'You',
+        avatar: user?.name?.charAt(0) || 'U',
+        role: user?.role || 'Community Member',
+        timestamp: 'Just now'
+      },
+      content: `Check out my new short video: "${shortData.title}"`,
+      video: shortData,
+      likes: 0,
+      comments: 0,
+      shares: 0,
+      isLiked: false,
+      type: 'video',
+      commentsList: []
+    };
+
+    setPosts(prev => [newPost, ...prev]);
+    setShowShortModal(false);
+  };
+
+  // Helper function to copy to clipboard
+  const copyToClipboard = (text) => {
+    // Create a temporary textarea element
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    textarea.style.position = 'fixed';
+    textarea.style.top = '0';
+    textarea.style.left = '0';
+    textarea.style.width = '2em';
+    textarea.style.height = '2em';
+    textarea.style.padding = '0';
+    textarea.style.border = 'none';
+    textarea.style.outline = 'none';
+    textarea.style.boxShadow = 'none';
+    textarea.style.background = 'transparent';
+    
+    document.body.appendChild(textarea);
+    textarea.focus();
+    textarea.select();
+    
+    try {
+      const successful = document.execCommand('copy');
+      if (successful) {
+        alert('Link copied to clipboard: ' + text);
+      } else {
+        alert('Failed to copy link. Please copy manually: ' + text);
+      }
+    } catch (err) {
+      console.error('Copy failed:', err);
+      alert('Failed to copy link. Please copy manually: ' + text);
+    }
+    
+    document.body.removeChild(textarea);
+  };
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 py-4">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+          {/* Left Sidebar - Stories */}
+          <div className="lg:col-span-8 xl:col-span-9">
+            <DashboardStories />
+            
+            {/* Create Post */}
+            <div className="bg-white rounded-lg shadow-sm p-4 mb-4">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white font-semibold">
+                  {user?.name?.charAt(0) || 'U'}
+                </div>
+                <input
+                  type="text"
+                  placeholder="What's on your mind?"
+                  className="flex-1 border border-gray-300 rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={newPostText}
+                  onChange={(e) => setNewPostText(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && handleCreatePost()}
+                />
+                <button
+                  onClick={handleCreatePost}
+                  disabled={!newPostText.trim()}
+                  className="bg-blue-600 text-white px-4 py-2 rounded-full font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Post
+                </button>
+              </div>
+              <div className="flex justify-around mt-4 pt-4 border-t">
+                {[
+                  { icon: '📷', label: 'Photo/Video', color: 'text-green-600' },
+                  { icon: '🎥', label: 'Short', action: () => setShowShortModal(true), color: 'text-red-600' },
+                  { icon: '😊', label: 'Feeling', color: 'text-yellow-600' }
+                ].map((item) => (
+                  <button
+                    key={item.label}
+                    onClick={item.action}
+                    className={`flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-100 ${item.color}`}
+                  >
+                    <span className="text-xl">{item.icon}</span>
+                    <span className="font-medium">{item.label}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Posts Feed */}
+            <div className="space-y-4">
+              {posts.map((post) => (
+                <div key={post.id} className="bg-white rounded-lg shadow-sm overflow-hidden">
+                  {/* Post Header */}
+                  <div className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold">
+                          {post.user.avatar}
+                        </div>
+                        <div>
+                          <h4 className="font-semibold text-gray-900">{post.user.name}</h4>
+                          <div className="flex items-center text-sm text-gray-500">
+                            <span>{post.user.timestamp}</span>
+                            <span className="mx-2">•</span>
+                            <span>{post.user.role}</span>
+                            <span className="mx-2">•</span>
+                            <span className="text-blue-600">🌐 Public</span>
+                          </div>
+                        </div>
+                      </div>
+                      <button className="text-gray-500 hover:text-gray-700">
+                        <span className="text-xl">⋯</span>
+                      </button>
+                    </div>
+                    
+                    {/* Post Content */}
+                    <div className="mt-3">
+                      <p className="text-gray-900">{post.content}</p>
+                    </div>
+                  </div>
+
+                  {/* Post Image/Video */}
+                  {post.image && (
+                    <div className="w-full">
+                      <img 
+                        src={post.image} 
+                        alt="Post content"
+                        className="w-full h-auto object-cover"
+                      />
+                    </div>
+                  )}
+
+                  {/* Post Stats */}
+                  <div className="px-4 py-2 border-t border-b text-sm text-gray-500 flex justify-between">
+                    <div className="flex items-center space-x-4">
+                      <div className="flex items-center">
+                        <div className="flex -space-x-2">
+                          <div className="w-6 h-6 bg-red-500 rounded-full border-2 border-white"></div>
+                          <div className="w-6 h-6 bg-blue-500 rounded-full border-2 border-white"></div>
+                          <div className="w-6 h-6 bg-green-500 rounded-full border-2 border-white"></div>
+                        </div>
+                        <span className="ml-2">{post.likes} likes</span>
+                      </div>
+                      <span>{post.comments} comments</span>
+                      <span>{post.shares} shares</span>
+                    </div>
+                  </div>
+
+                  {/* Post Actions */}
+                  <div className="p-2">
+                    <div className="flex justify-around">
+                      {[
+                        { 
+                          icon: post.isLiked ? '❤️' : '👍', 
+                          label: post.isLiked ? 'Liked' : 'Like', 
+                          action: () => handleLike(post.id), 
+                          active: post.isLiked,
+                          color: post.isLiked ? 'text-red-600' : 'text-gray-600'
+                        },
+                        { 
+                          icon: '💬', 
+                          label: 'Comment', 
+                          action: () => toggleCommentInput(post.id) 
+                        },
+                        { 
+                          icon: '🔄', 
+                          label: 'Share', 
+                          action: () => handleShare(post.id) 
+                        }
+                      ].map((action) => (
+                        <button
+                          key={action.label}
+                          onClick={action.action}
+                          className={`flex items-center space-x-2 px-4 py-2 rounded-lg flex-1 justify-center mx-1 ${
+                            action.active 
+                              ? 'bg-red-50 text-red-600' 
+                              : 'text-gray-600 hover:bg-gray-100'
+                          } ${action.color || ''}`}
+                        >
+                          <span className="text-lg">{action.icon}</span>
+                          <span className="font-medium">{action.label}</span>
+                        </button>
+                      ))}
+                    </div>
+
+                    {/* Comment Input (Visible when active) */}
+                    {activeCommentPost === post.id && (
+                      <div className="mt-3 p-3 border-t">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-8 h-8 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                            {user?.name?.charAt(0) || 'U'}
+                          </div>
+                          <div className="flex-1 flex space-x-2">
+                            <input
+                              type="text"
+                              placeholder="Write a comment..."
+                              className="flex-1 border border-gray-300 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              value={commentTexts[post.id] || ''}
+                              onChange={(e) => handleCommentChange(post.id, e.target.value)}
+                              onKeyPress={(e) => e.key === 'Enter' && handleAddComment(post.id)}
+                            />
+                            <button
+                              onClick={() => handleAddComment(post.id)}
+                              disabled={!commentTexts[post.id]?.trim()}
+                              className="bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                              Post
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Comments List */}
+                    {post.commentsList && post.commentsList.length > 0 && (
+                      <div className="px-4 py-2 border-t">
+                        <div className="space-y-3">
+                          {post.commentsList.map((comment) => (
+                            <div key={comment.id} className="flex items-start space-x-3">
+                              <div className="w-7 h-7 bg-gradient-to-r from-gray-400 to-gray-600 rounded-full flex items-center justify-center text-white text-xs font-semibold">
+                                {comment.avatar || comment.user.charAt(0)}
+                              </div>
+                              <div className="flex-1">
+                                <div className="bg-gray-100 rounded-2xl px-3 py-2">
+                                  <div className="font-medium text-sm">{comment.user}</div>
+                                  <p className="text-sm">{comment.text}</p>
+                                </div>
+                                <div className="flex items-center space-x-3 mt-1 ml-2 text-xs text-gray-500">
+                                  <span>{comment.time}</span>
+                                  <button className="hover:text-blue-600">Like</button>
+                                  <button className="hover:text-blue-600">Reply</button>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Right Sidebar */}
+          <div className="lg:col-span-4 xl:col-span-3 space-y-4">
+            {/* Online Connections */}
+            <div className="bg-white rounded-lg shadow-sm p-4">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="font-semibold text-gray-900">Online Now</h3>
+                <div className="flex items-center">
+                  <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                  <span className="ml-2 text-sm text-green-600">{onlineUsers} online</span>
+                </div>
+              </div>
+              <div className="space-y-3">
+                {[
+                  { name: 'Alex Kim', avatar: 'AK', status: 'Online' },
+                  { name: 'Priya Patel', avatar: 'PP', status: 'Active 5m ago' },
+                  { name: 'Marcus Lee', avatar: 'ML', status: 'Typing...' },
+                  { name: 'Sophia Chen', avatar: 'SC', status: 'Online' }
+                ].map((connection) => (
+                  <div key={connection.name} className="flex items-center justify-between hover:bg-gray-50 p-2 rounded">
+                    <div className="flex items-center space-x-3">
+                      <div className="relative">
+                        <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-blue-500 rounded-full flex items-center justify-center text-white font-semibold">
+                          {connection.avatar}
+                        </div>
+                        <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
+                      </div>
+                      <div>
+                        <span className="font-medium text-gray-900">{connection.name}</span>
+                        <div className="text-xs text-gray-500">{connection.status}</div>
+                      </div>
+                    </div>
+                    <button className="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                      Message
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Trending Hashtags */}
+            <div className="bg-white rounded-lg shadow-sm p-4">
+              <h3 className="font-semibold text-gray-900 mb-3">Trending Now</h3>
+              <div className="space-y-2">
+                {[
+                  { tag: '#AccessibilityWin', posts: '245 posts' },
+                  { tag: '#WheelchairLife', posts: '189 posts' },
+                  { tag: '#BlindCommunity', posts: '156 posts' },
+                  { tag: '#InclusiveDesign', posts: '132 posts' }
+                ].map((trend) => (
+                  <div key={trend.tag} className="flex justify-between items-center hover:bg-gray-50 p-2 rounded cursor-pointer">
+                    <div>
+                      <div className="font-medium text-blue-600">{trend.tag}</div>
+                      <div className="text-xs text-gray-500">{trend.posts}</div>
+                    </div>
+                    <span className="text-gray-400">→</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Short Video Modal */}
+      {showShortModal && (
+        <CreateShortModal
+          onClose={() => setShowShortModal(false)}
+          onCreate={handleCreateShort}
+        />
+      )}
+    </div>
+  );
+}
