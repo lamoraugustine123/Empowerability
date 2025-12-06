@@ -51,8 +51,8 @@ export default function FacebookSidebar() {
     return (
       <div className="w-64 bg-white rounded-lg shadow-sm p-4">
         <div className="animate-pulse">
-          <div className="h-4 bg-gray-200 rounded w-3/4 mb-4"></div>
-          <div className="h-32 bg-gray-200 rounded mb-4"></div>
+          <div className=" bg-gray-200 rounded w-3/4 mb-4"></div>
+          <div className=" bg-gray-200 rounded mb-4"></div>
         </div>
       </div>
     );
@@ -63,7 +63,7 @@ export default function FacebookSidebar() {
       {/* User Profile Card */}
       <div className="bg-white rounded-lg shadow-sm p-4">
         <div className="flex items-center space-x-3 mb-4">
-          <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">
+          <div className="w-10  bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">
             {user.name?.charAt(0) || 'U'}
           </div>
           <div>
@@ -101,7 +101,7 @@ export default function FacebookSidebar() {
             {friendRequests.map((request) => (
               <div key={request.id} className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
-                  <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
+                  <div className="w-8  bg-gray-200 rounded-full flex items-center justify-center">
                     {request.avatar}
                   </div>
                   <div>
@@ -112,14 +112,14 @@ export default function FacebookSidebar() {
                 <div className="flex space-x-1">
                   <button 
                     onClick={() => handleAcceptRequest(request.id)}
-                    className="w-7 h-7 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-blue-600"
+                    className="w-7  bg-blue-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-blue-600"
                     title="Accept"
                   >
                     ✓
                   </button>
                   <button 
                     onClick={() => handleRejectRequest(request.id)}
-                    className="w-7 h-7 bg-gray-200 text-gray-600 rounded-full flex items-center justify-center text-xs hover:bg-gray-300"
+                    className="w-7  bg-gray-200 text-gray-600 rounded-full flex items-center justify-center text-xs hover:bg-gray-300"
                     title="Reject"
                   >
                     ×
@@ -145,7 +145,7 @@ export default function FacebookSidebar() {
             {birthdays.map((birthday) => (
               <div key={birthday.id} className="flex items-center justify-between text-sm">
                 <div className="flex items-center space-x-2">
-                  <div className="w-6 h-6 bg-pink-100 rounded-full flex items-center justify-center text-pink-500">
+                  <div className="w-6  bg-pink-100 rounded-full flex items-center justify-center text-pink-500">
                     🎂
                   </div>
                   <span>{birthday.name}</span>
