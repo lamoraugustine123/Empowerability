@@ -2,18 +2,9 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import PhotoUploadModal from './PhotoUploadModal';
-import PrivacySettings from './settings/PrivacySettings';
-import AccessibilitySettings from './settings/AccessibilitySettings';
-import NotificationSettings from './settings/NotificationSettings';
-import SecuritySettings from './settings/SecuritySettings';
-import VerificationSettings from './settings/VerificationSettings';
-import ActivityLog from './settings/ActivityLog';
-import ProfileCompletion from './ProfileCompletion';
 
 export default function EnhancedProfileSlider({ isOpen, onClose, user }) {
   const [activeTab, setActiveTab] = useState('profile');
-  const [activeSettingsTab, setActiveSettingsTab] = useState('privacy');
-  const [activeAccountTab, setActiveAccountTab] = useState('verification');
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
@@ -42,6 +33,7 @@ export default function EnhancedProfileSlider({ isOpen, onClose, user }) {
         birthday: user.birthday || '',
       });
       
+      // Load photos from localStorage
       if (userData.coverPhoto) {
         setCoverPhoto(userData.coverPhoto);
       }
@@ -57,11 +49,12 @@ export default function EnhancedProfileSlider({ isOpen, onClose, user }) {
   };
 
   const handleSave = () => {
+    // Save to localStorage and update user
     const userData = JSON.parse(localStorage.getItem('user') || '{}');
     const updatedUser = { ...userData, ...formData };
     localStorage.setItem('user', JSON.stringify(updatedUser));
     setIsEditing(false);
-    window.location.reload();
+    window.location.reload(); // Refresh to show updated data
   };
 
   const handlePhotoUploadComplete = (imageData) => {
@@ -71,6 +64,7 @@ export default function EnhancedProfileSlider({ isOpen, onClose, user }) {
       setProfilePhoto(imageData);
     }
     
+    // Update the user in localStorage
     const userData = JSON.parse(localStorage.getItem('user') || '{}');
     localStorage.setItem('user', JSON.stringify({ ...userData, [imageData.type === 'cover' ? 'coverPhoto' : 'profilePhoto']: imageData }));
   };
@@ -89,41 +83,49 @@ export default function EnhancedProfileSlider({ isOpen, onClose, user }) {
     }
   };
 
+  // Format date for display
   const formatDate = (dateString) => {
     if (!dateString) return '';
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
   };
 
+  // Calculate days since joining
   const getDaysSinceJoined = () => {
-    const joinDate = new Date('2024-01-01');
+    const joinDate = new Date('2024-01-01'); // Default Jan 2024
     const today = new Date();
     const diffTime = Math.abs(today - joinDate);
-    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays;
   };
 
+  // Get friend count
   const getFriendCount = () => {
-    return Math.floor(Math.random() * 100) + 200;
+    return Math.floor(Math.random() * 100) + 200; // Random between 200-300
   };
 
   if (!isOpen) return null;
 
   return (
     <>
+      {/* Overlay */}
       <div 
         className="fixed inset-0 bg-black bg-opacity-50 z-50 transition-opacity"
         onClick={onClose}
       />
       
+      {/* Slider */}
       <div className="fixed right-0 top-0 h-full w-full md:w-96 bg-white shadow-2xl z-50 transform transition-transform">
         {/* Header with Cover Photo */}
         <div className="relative">
+          {/* Cover Photo */}
           <div 
             className="h-32 bg-gradient-to-r from-blue-600 to-purple-600"
             style={coverPhoto ? { backgroundImage: `url(${coverPhoto.url})`, backgroundSize: 'cover', backgroundPosition: 'center' } : {}}
           >
             <div className="absolute inset-0 bg-black bg-opacity-20"></div>
             
+            {/* Cover Photo Actions */}
             {isEditing && (
               <div className="absolute bottom-2 right-2 flex space-x-2">
                 <button 
@@ -161,6 +163,7 @@ export default function EnhancedProfileSlider({ isOpen, onClose, user }) {
                 )}
               </div>
               
+              {/* Profile Photo Actions */}
               {isEditing && (
                 <div className="absolute -bottom-2 -right-2 flex space-x-1">
                   <button 
@@ -182,6 +185,7 @@ export default function EnhancedProfileSlider({ isOpen, onClose, user }) {
             </div>
           </div>
           
+          {/* Close Button */}
           <button 
             onClick={onClose}
             className="absolute top-4 right-4 text-white hover:text-gray-200 text-2xl"
@@ -192,9 +196,9 @@ export default function EnhancedProfileSlider({ isOpen, onClose, user }) {
 
         {/* Content after cover photo */}
         <div className="pt-16">
-          {/* Main Tabs Navigation */}
+          {/* Tabs Navigation */}
           <div className="flex border-b">
-            {['profile', 'friends', 'photos', 'account', 'settings'].map((tab) => (
+            {['profile', 'friends', 'photos', 'settings'].map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
@@ -214,28 +218,12 @@ export default function EnhancedProfileSlider({ isOpen, onClose, user }) {
             {/* PROFILE TAB */}
             {activeTab === 'profile' && (
               <div className="p-6 space-y-6">
-                {/* Profile Completion */}
-                <ProfileCompletion user={user} />
-                
                 {/* User Info */}
                 <div className="text-center">
-                  <div className="flex items-center justify-center space-x-2 mb-2">
-                    <h3 className="text-xl font-bold">{user?.name || 'LAMOR AUGUSTINE'}</h3>
-                    {/* Verification Badge - Check if verified */}
-                    {(() => {
-                      const userData = JSON.parse(localStorage.getItem('user') || '{}');
-                      if (userData.verificationStatus?.status === 'verified') {
-                        return (
-                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                            <span className="mr-1">✓</span> Verified
-                          </span>
-                        );
-                      }
-                      return null;
-                    })()}
-                  </div>
+                  <h3 className="text-xl font-bold">{user?.name || 'LAMOR AUGUSTINE'}</h3>
                   <p className="text-gray-600">{user?.email || 'lamoraugustine122@gmail.com'}</p>
                   
+                  {/* Stats */}
                   <div className="flex justify-center space-x-4 mt-3 text-sm text-gray-600">
                     <div className="flex items-center space-x-1">
                       <span>📍</span>
@@ -251,6 +239,7 @@ export default function EnhancedProfileSlider({ isOpen, onClose, user }) {
                     </div>
                   </div>
 
+                  {/* Days Active Badge */}
                   <div className="inline-flex items-center mt-3 px-3 py-1 bg-gradient-to-r from-green-100 to-blue-100 text-gray-800 rounded-full text-sm">
                     <span className="mr-2">🔥</span>
                     <span>Active for {getDaysSinceJoined()} days</span>
@@ -375,11 +364,13 @@ export default function EnhancedProfileSlider({ isOpen, onClose, user }) {
                     </>
                   ) : (
                     <>
+                      {/* Display Bio */}
                       <div className="bg-gray-50 rounded-lg p-4">
                         <h4 className="font-medium text-gray-700 mb-2">Bio</h4>
                         <p className="text-gray-800">{formData.bio}</p>
                       </div>
 
+                      {/* Additional Info Cards */}
                       {formData.pronouns && (
                         <div className="flex items-center space-x-3 p-3 bg-blue-50 rounded-lg">
                           <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
@@ -439,6 +430,7 @@ export default function EnhancedProfileSlider({ isOpen, onClose, user }) {
               <div className="p-6">
                 <h3 className="text-xl font-bold mb-4">Friends</h3>
                 
+                {/* Friends Stats */}
                 <div className="grid grid-cols-3 gap-4 mb-6">
                   <div className="bg-blue-50 p-4 rounded-lg text-center">
                     <div className="text-2xl font-bold text-blue-600">{getFriendCount()}</div>
@@ -454,6 +446,7 @@ export default function EnhancedProfileSlider({ isOpen, onClose, user }) {
                   </div>
                 </div>
 
+                {/* Friend List */}
                 <div className="space-y-3">
                   {['Sarah Johnson', 'Mike Chen', 'Emma Wilson', 'David Brown', 'Lisa Taylor', 'Alex Garcia'].map((friend, idx) => (
                     <div key={idx} className="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg cursor-pointer">
@@ -483,6 +476,7 @@ export default function EnhancedProfileSlider({ isOpen, onClose, user }) {
               <div className="p-6">
                 <h3 className="text-xl font-bold mb-4">Photos</h3>
                 
+                {/* Photo Management */}
                 <div className="grid grid-cols-2 gap-4 mb-6">
                   <div className="bg-gradient-to-br from-blue-500 to-purple-500 p-4 rounded-lg text-white">
                     <div className="text-2xl font-bold">Cover Photos</div>
@@ -506,6 +500,7 @@ export default function EnhancedProfileSlider({ isOpen, onClose, user }) {
                   </div>
                 </div>
 
+                {/* Photo Grid */}
                 <div className="mb-6">
                   <div className="flex justify-between items-center mb-3">
                     <h4 className="font-medium">Recent Uploads</h4>
@@ -553,6 +548,7 @@ export default function EnhancedProfileSlider({ isOpen, onClose, user }) {
                       </div>
                     )}
                     
+                    {/* Empty slots */}
                     {Array.from({ length: 4 - (coverPhoto ? 1 : 0) - (profilePhoto ? 1 : 0) }).map((_, idx) => (
                       <div key={idx} className="aspect-square bg-gray-100 rounded-lg flex items-center justify-center">
                         <span className="text-gray-400">📷</span>
@@ -580,99 +576,48 @@ export default function EnhancedProfileSlider({ isOpen, onClose, user }) {
               </div>
             )}
 
-            {/* ACCOUNT TAB - NEW */}
-            {activeTab === 'account' && (
-              <div className="p-6">
-                {/* Account Sub-tabs */}
-                <div className="flex border-b mb-6">
-                  {['verification', 'activity'].map((tab) => (
-                    <button
-                      key={tab}
-                      onClick={() => setActiveAccountTab(tab)}
-                      className={`flex-1 py-3 text-center font-medium capitalize text-sm ${
-                        activeAccountTab === tab
-                          ? 'text-blue-600 border-b-2 border-blue-600'
-                          : 'text-gray-600 hover:bg-gray-50'
-                      }`}
-                    >
-                      {tab === 'activity' ? 'Activity Log' : 'Verification'}
-                    </button>
-                  ))}
-                </div>
-
-                {/* Account Content */}
-                <div className="h-[calc(100vh-400px)] overflow-y-auto">
-                  {/* Verification Settings */}
-                  {activeAccountTab === 'verification' && (
-                    <div>
-                      <h3 className="text-xl font-bold mb-6">Account Verification</h3>
-                      <VerificationSettings user={user} />
-                    </div>
-                  )}
-
-                  {/* Activity Log */}
-                  {activeAccountTab === 'activity' && (
-                    <div>
-                      <h3 className="text-xl font-bold mb-6">Activity Log</h3>
-                      <ActivityLog />
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-
             {/* SETTINGS TAB */}
             {activeTab === 'settings' && (
               <div className="p-6">
-                {/* Settings Sub-tabs */}
-                <div className="flex border-b mb-6">
-                  {['privacy', 'accessibility', 'notifications', 'security'].map((tab) => (
-                    <button
-                      key={tab}
-                      onClick={() => setActiveSettingsTab(tab)}
-                      className={`flex-1 py-3 text-center font-medium capitalize text-sm ${
-                        activeSettingsTab === tab
-                          ? 'text-blue-600 border-b-2 border-blue-600'
-                          : 'text-gray-600 hover:bg-gray-50'
-                      }`}
-                    >
-                      {tab}
-                    </button>
-                  ))}
+                <h3 className="text-xl font-bold mb-6">Account Settings</h3>
+                
+                <div className="space-y-4">
+                  <div className="p-4 border rounded-lg hover:bg-gray-50 cursor-pointer">
+                    <div className="font-medium">Privacy Settings</div>
+                    <div className="text-sm text-gray-600">Manage who can see your content</div>
+                  </div>
+
+                  <div className="p-4 border rounded-lg hover:bg-gray-50 cursor-pointer">
+                    <div className="font-medium">Notification Preferences</div>
+                    <div className="text-sm text-gray-600">Customize your notifications</div>
+                  </div>
+
+                  <div className="p-4 border rounded-lg hover:bg-gray-50 cursor-pointer">
+                    <div className="font-medium">Accessibility Settings</div>
+                    <div className="text-sm text-gray-600">Adjust for visual/audio needs</div>
+                  </div>
+
+                  <div className="p-4 border rounded-lg hover:bg-gray-50 cursor-pointer">
+                    <div className="font-medium">Photo Privacy</div>
+                    <div className="text-sm text-gray-600">Control who sees your photos</div>
+                  </div>
+
+                  <div className="p-4 border rounded-lg hover:bg-gray-50 cursor-pointer">
+                    <div className="font-medium">Language & Region</div>
+                    <div className="text-sm text-gray-600">Change language and timezone</div>
+                  </div>
+
+                  <div className="p-4 border rounded-lg hover:bg-gray-50 cursor-pointer">
+                    <div className="font-medium">Security & Login</div>
+                    <div className="text-sm text-gray-600">Password, 2FA, and login alerts</div>
+                  </div>
+
+                  <div className="p-4 border rounded-lg hover:bg-gray-50 cursor-pointer">
+                    <div className="font-medium">Data & Permissions</div>
+                    <div className="text-sm text-gray-600">Download your data</div>
+                  </div>
                 </div>
 
-                {/* Settings Content */}
-                <div className="h-[calc(100vh-400px)] overflow-y-auto">
-                  {activeSettingsTab === 'privacy' && (
-                    <div>
-                      <h3 className="text-xl font-bold mb-6">Privacy Settings</h3>
-                      <PrivacySettings />
-                    </div>
-                  )}
-
-                  {activeSettingsTab === 'accessibility' && (
-                    <div>
-                      <h3 className="text-xl font-bold mb-6">Accessibility Settings</h3>
-                      <AccessibilitySettings />
-                    </div>
-                  )}
-
-                  {activeSettingsTab === 'notifications' && (
-                    <div>
-                      <h3 className="text-xl font-bold mb-6">Notification Settings</h3>
-                      <NotificationSettings />
-                    </div>
-                  )}
-
-                  {activeSettingsTab === 'security' && (
-                    <div>
-                      <h3 className="text-xl font-bold mb-6">Security Settings</h3>
-                      <SecuritySettings />
-                    </div>
-                  )}
-                </div>
-
-                {/* Bottom Actions */}
                 <div className="mt-8 pt-6 border-t">
                   <button 
                     onClick={() => {
