@@ -2,53 +2,62 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Custom Animations */
-@keyframes float {
-  0%, 100% { 
-    transform: translateY(0px); 
-  }
-  50% { 
-    transform: translateY(-10px); 
-  }
+/* FORCE SCROLLBARS TO BE ALWAYS VISIBLE AND WORKING */
+html, body {
+  overflow: hidden !important;
+  height: 100% !important;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
-@keyframes glow {
-  0%, 100% {
-    text-shadow: 0 0 5px currentColor;
-  }
-  50% {
-    text-shadow: 0 0 15px currentColor;
-  }
+/* PERMANENT SCROLLBAR STYLING - ALWAYS VISIBLE */
+* {
+  scrollbar-width: thin !important;
+  scrollbar-color: #888 #f1f1f1 !important;
 }
 
-.animate-float {
-  animation: float 3s ease-in-out infinite;
-}
-
-.animate-glow {
-  animation: glow 2s ease-in-out infinite;
-}
-
-/* Custom scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 12px !important;
+  height: 12px !important;
+  display: block !important;
+  visibility: visible !important;
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
+  background: #f1f1f1 !important;
+  border-radius: 6px !important;
+  display: block !important;
+  visibility: visible !important;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(45deg, #3b82f6, #8b5cf6);
-  border-radius: 10px;
+  background: #888 !important;
+  border-radius: 6px !important;
+  border: 3px solid #f1f1f1 !important;
+  display: block !important;
+  visibility: visible !important;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(45deg, #2563eb, #7c3aed);
+  background: #555 !important;
 }
 
-@keyframes slideIn {
-  from { transform: translateX(100%); }
-  to { transform: translateX(0); }
+/* Ensure overflow-auto always shows scrollbars */
+.overflow-y-auto {
+  overflow-y: auto !important;
+  scrollbar-width: thin !important;
+  scrollbar-color: #888 #f1f1f1 !important;
+}
+
+/* Fix for flex containers */
+.flex {
+  min-height: 0;
+  min-width: 0;
+}
+
+/* Ensure independent scrolling works */
+.h-\[calc\(100vh-120px\)\] {
+  height: calc(100vh - 120px) !important;
+  min-height: 0 !important;
 }

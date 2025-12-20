@@ -31,21 +31,14 @@ function DashboardContent() {
   const router = useRouter();
 
   useEffect(() => {
-    // Only run auth check once
     if (authChecked) return;
 
     const checkAuth = () => {
-      console.log('🔐 Checking authentication...');
-      
       try {
         const token = localStorage.getItem('token');
         const userData = localStorage.getItem('user');
         
-        console.log('Auth check - Token:', !!token, 'User data:', !!userData);
-        
         if (!token || !userData) {
-          console.log('❌ No auth data found, redirecting to login');
-          // Clear any stale data
           localStorage.removeItem('token');
           localStorage.removeItem('user');
           router.push('/login');
@@ -53,7 +46,6 @@ function DashboardContent() {
         }
 
         const parsedUser = JSON.parse(userData);
-        console.log('✅ User authenticated:', parsedUser.name || parsedUser.email);
         setUser(parsedUser);
         
         // Load sample posts
@@ -113,6 +105,206 @@ function DashboardContent() {
               { id: 1, author: 'David', authorInitial: 'D', content: 'Congratulations! Your group has been so helpful!', time: '22h', likes: 8 },
             ]
           },
+          {
+            id: 4,
+            author: 'John Doe',
+            authorInitial: 'J',
+            authorColor: 'bg-gradient-to-br from-yellow-500 to-orange-500',
+            isVerified: false,
+            content: 'Just completed my first month using assistive technology. Life changing! #disabilitytech #accessibility',
+            timestamp: new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString(),
+            privacy: 'public',
+            likes: 78,
+            comments: 12,
+            shares: 3,
+            isLiked: false,
+            isSaved: false,
+            commentsList: []
+          },
+          {
+            id: 5,
+            author: 'Sarah Wilson',
+            authorInitial: 'S',
+            authorColor: 'bg-gradient-to-br from-teal-500 to-blue-500',
+            isVerified: true,
+            content: 'Sharing my journey with visual impairment and how technology has helped me stay connected. #visualimpairment #tech',
+            timestamp: new Date(Date.now() - 72 * 60 * 60 * 1000).toISOString(),
+            privacy: 'public',
+            likes: 203,
+            comments: 45,
+            shares: 18,
+            isLiked: true,
+            isSaved: true,
+            commentsList: [
+              { id: 1, author: 'Mike', authorInitial: 'M', content: 'Thank you for sharing your story!', time: '2d', likes: 12 },
+            ]
+          },
+          {
+            id: 6,
+            author: 'Robert Chen',
+            authorInitial: 'R',
+            authorColor: 'bg-gradient-to-br from-indigo-500 to-purple-500',
+            isVerified: false,
+            content: 'Looking for recommendations for wheelchair-accessible travel destinations in Europe. Any suggestions? #travel #accessibility',
+            timestamp: new Date(Date.now() - 96 * 60 * 60 * 1000).toISOString(),
+            privacy: 'public',
+            likes: 67,
+            comments: 28,
+            shares: 7,
+            isLiked: false,
+            isSaved: false,
+            commentsList: []
+          },
+          {
+            id: 7,
+            author: 'Emma Davis',
+            authorInitial: 'E',
+            authorColor: 'bg-gradient-to-br from-red-500 to-pink-500',
+            isVerified: true,
+            content: 'Our community fundraiser for accessibility devices reached its goal! Thank you everyone for your support. ❤️ #fundraiser #community',
+            timestamp: new Date(Date.now() - 120 * 60 * 60 * 1000).toISOString(),
+            privacy: 'public',
+            likes: 312,
+            comments: 67,
+            shares: 42,
+            isLiked: false,
+            isSaved: false,
+            image: 'https://via.placeholder.com/600x300/EF4444/FFFFFF?text=Fundraiser+Success',
+            commentsList: []
+          },
+          {
+            id: 8,
+            author: 'Michael Brown',
+            authorInitial: 'M',
+            authorColor: 'bg-gradient-to-br from-purple-500 to-indigo-500',
+            isVerified: false,
+            content: 'Started learning sign language today. Any tips for beginners? #signlanguage #learning',
+            timestamp: new Date(Date.now() - 144 * 60 * 60 * 1000).toISOString(),
+            privacy: 'public',
+            likes: 89,
+            comments: 34,
+            shares: 9,
+            isLiked: true,
+            isSaved: false,
+            commentsList: []
+          },
+          // ADDING MORE POSTS FOR MORE SCROLLING
+          {
+            id: 9,
+            author: 'Lisa Wong',
+            authorInitial: 'L',
+            authorColor: 'bg-gradient-to-br from-blue-500 to-green-500',
+            isVerified: true,
+            content: 'New wheelchair ramp installed at the community center! So excited about this accessibility improvement. ♿ #accessibilitymatters',
+            timestamp: new Date(Date.now() - 168 * 60 * 60 * 1000).toISOString(),
+            privacy: 'public',
+            likes: 145,
+            comments: 32,
+            shares: 15,
+            isLiked: false,
+            isSaved: false,
+            image: 'https://via.placeholder.com/600x300/10B981/FFFFFF?text=Wheelchair+Ramp',
+            commentsList: []
+          },
+          {
+            id: 10,
+            author: 'Tom Harris',
+            authorInitial: 'T',
+            authorColor: 'bg-gradient-to-br from-orange-500 to-red-500',
+            isVerified: false,
+            content: 'Just got my new hearing aids and they\'re life-changing! So grateful for modern technology. 👂 #hearingaids #tech',
+            timestamp: new Date(Date.now() - 192 * 60 * 60 * 1000).toISOString(),
+            privacy: 'public',
+            likes: 98,
+            comments: 25,
+            shares: 6,
+            isLiked: true,
+            isSaved: true,
+            commentsList: []
+          },
+          {
+            id: 11,
+            author: 'Anna Smith',
+            authorInitial: 'A',
+            authorColor: 'bg-gradient-to-br from-purple-500 to-pink-500',
+            isVerified: false,
+            content: 'Today I gave my first presentation using speech-to-text technology! Nervous but excited about the progress. 🎤 #speechtotext #inclusion',
+            timestamp: new Date(Date.now() - 200 * 60 * 60 * 1000).toISOString(),
+            privacy: 'public',
+            likes: 76,
+            comments: 14,
+            shares: 3,
+            isLiked: false,
+            isSaved: false,
+            commentsList: []
+          },
+          {
+            id: 12,
+            author: 'Chris Lee',
+            authorInitial: 'C',
+            authorColor: 'bg-gradient-to-br from-blue-500 to-indigo-500',
+            isVerified: true,
+            content: 'Our team just released an open-source screen reader plugin! Free for all developers. #opensource #accessibility #dev',
+            timestamp: new Date(Date.now() - 216 * 60 * 60 * 1000).toISOString(),
+            privacy: 'public',
+            likes: 189,
+            comments: 42,
+            shares: 28,
+            isLiked: true,
+            isSaved: true,
+            image: 'https://via.placeholder.com/600x300/4F46E5/FFFFFF?text=Open+Source+Tool',
+            commentsList: []
+          },
+          {
+            id: 13,
+            author: 'Sophia Patel',
+            authorInitial: 'S',
+            authorColor: 'bg-gradient-to-br from-red-500 to-orange-500',
+            isVerified: false,
+            content: 'Just completed my wheelchair basketball tournament! What an amazing experience with an incredible community. 🏀 #wheelchairbasketball #sports',
+            timestamp: new Date(Date.now() - 240 * 60 * 60 * 1000).toISOString(),
+            privacy: 'public',
+            likes: 234,
+            comments: 56,
+            shares: 34,
+            isLiked: false,
+            isSaved: false,
+            image: 'https://via.placeholder.com/600x300/F97316/FFFFFF?text=Wheelchair+Basketball',
+            commentsList: []
+          },
+          {
+            id: 14,
+            author: 'David Kim',
+            authorInitial: 'D',
+            authorColor: 'bg-gradient-to-br from-green-500 to-emerald-500',
+            isVerified: true,
+            content: 'New braille display technology just got 50% more affordable thanks to community grants! #braille #technology #affordable',
+            timestamp: new Date(Date.now() - 264 * 60 * 60 * 1000).toISOString(),
+            privacy: 'public',
+            likes: 167,
+            comments: 38,
+            shares: 19,
+            isLiked: false,
+            isSaved: false,
+            commentsList: []
+          },
+          {
+            id: 15,
+            author: 'Olivia Garcia',
+            authorInitial: 'O',
+            authorColor: 'bg-gradient-to-br from-pink-500 to-rose-500',
+            isVerified: false,
+            content: 'Teaching my service dog new commands this week! So proud of how far we\'ve come together. 🐕 #servicedog #training #disability',
+            timestamp: new Date(Date.now() - 288 * 60 * 60 * 1000).toISOString(),
+            privacy: 'public',
+            likes: 142,
+            comments: 31,
+            shares: 12,
+            isLiked: true,
+            isSaved: false,
+            image: 'https://via.placeholder.com/600x300/F43F5E/FFFFFF?text=Service+Dog+Training',
+            commentsList: []
+          },
         ];
         
         setPosts(samplePosts);
@@ -121,16 +313,13 @@ function DashboardContent() {
         
       } catch (error) {
         console.error('❌ Error in auth check:', error);
-        // Clear invalid data
         localStorage.removeItem('token');
         localStorage.removeItem('user');
         router.push('/login');
       }
     };
 
-    // Use timeout to ensure we're in browser context
     const timer = setTimeout(checkAuth, 100);
-    
     return () => clearTimeout(timer);
   }, [router, authChecked]);
 
@@ -145,17 +334,15 @@ function DashboardContent() {
   return (
     <>
       <div className="min-h-screen bg-gray-100">
-        {/* Fixed Header */}
-        <header className="sticky top-0 z-40 bg-white border-b shadow-sm">
+        {/* Fixed Header - NEVER SCROLLS */}
+        <header className="sticky top-0 z-50 bg-white border-b shadow-sm">
           <div className="container mx-auto px-4 py-3">
             <div className="flex items-center justify-between">
-              {/* Logo */}
               <div className="flex items-center space-x-2">
                 <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-md"></div>
                 <span className="text-xl font-bold text-gray-900">AbilityConnect</span>
               </div>
 
-              {/* Search */}
               <div className="hidden md:flex flex-1 max-w-2xl mx-4">
                 <div className="relative w-full">
                   <input
@@ -167,9 +354,7 @@ function DashboardContent() {
                 </div>
               </div>
 
-              {/* User Menu */}
               <div className="flex items-center space-x-4">
-                {/* Profile Button */}
                 <button 
                   onClick={handleUserProfileClick}
                   className="flex items-center space-x-2 bg-gray-100 hover:bg-gray-200 px-3 py-2 rounded-full transition-colors"
@@ -184,84 +369,130 @@ function DashboardContent() {
           </div>
         </header>
 
-        {/* Main Content with Independent Scrollable Sections */}
-        <main className="container mx-auto px-4 py-6">
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 h-[calc(100vh-120px)]">
-            {/* Left Sidebar - Independently Scrollable */}
-            <div className="lg:col-span-1 h-full">
-              <div className="h-full flex flex-col">
-                <div className="flex-shrink-0">
+        {/* MAIN CONTENT AREA - NO OVERFLOW PROPERTIES HERE */}
+        <div className="container mx-auto px-4 py-6">
+          {/* THREE INDEPENDENT SCROLL CONTAINERS */}
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            
+            {/* COLUMN 1: LEFT SIDEBAR - INDEPENDENT SCROLL CONTAINER */}
+            <div className="lg:col-span-1">
+              {/* SCROLL CONTAINER WITH FIXED HEIGHT */}
+              <div className="h-[calc(100vh-120px)] overflow-y-auto">
+                {/* Fixed top part */}
+                <div className="mb-4">
                   <FacebookSidebar onUserProfileClick={handleUserProfileClick} />
                 </div>
-                <div className="flex-1 overflow-y-auto mt-4">
-                  {/* Additional sidebar content that scrolls independently */}
-                  <div className="space-y-4 pr-2">
-                    <div className="bg-white rounded-lg shadow-sm p-4">
-                      <h3 className="font-bold text-gray-900 mb-3">Groups</h3>
-                      <div className="space-y-2">
-                        {['Accessibility Devs', 'Visual Impairment Support', 'Wheelchair Sports', 'Deaf Community'].map((group, idx) => (
-                          <div key={idx} className="flex items-center space-x-2 p-2 hover:bg-gray-50 rounded-lg cursor-pointer">
-                            <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                              <span className="text-blue-600">👥</span>
-                            </div>
-                            <span className="text-sm">{group}</span>
+                
+                {/* Scrollable content */}
+                <div className="space-y-4 pb-8">
+                  <div className="bg-white rounded-lg shadow-sm p-4">
+                    <h3 className="font-bold text-gray-900 mb-3">Groups (8)</h3>
+                    <div className="space-y-2">
+                      {['Accessibility Devs', 'Visual Impairment Support', 'Wheelchair Sports', 'Deaf Community', 'Autism Support Network', 'Mental Health Allies', 'Caregiver Support', 'Tech Accessibility'].map((group, idx) => (
+                        <div key={idx} className="flex items-center space-x-2 p-2 hover:bg-gray-50 rounded-lg cursor-pointer">
+                          <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                            <span className="text-blue-600">👥</span>
                           </div>
-                        ))}
-                      </div>
+                          <span className="text-sm">{group}</span>
+                        </div>
+                      ))}
                     </div>
-                    
-                    <div className="bg-white rounded-lg shadow-sm p-4">
-                      <h3 className="font-bold text-gray-900 mb-3">Events</h3>
-                      <div className="space-y-2">
-                        {['Accessibility Workshop - Tomorrow', 'Community Meetup - Friday', 'Support Group - Sunday'].map((event, idx) => (
-                          <div key={idx} className="p-2 hover:bg-gray-50 rounded-lg cursor-pointer">
-                            <div className="font-medium text-sm">{event}</div>
-                            <div className="text-xs text-gray-500">Click for details</div>
-                          </div>
-                        ))}
-                      </div>
+                    <div className="mt-3 text-sm text-blue-500 cursor-pointer hover:text-blue-600">
+                      See all 12 groups →
+                    </div>
+                  </div>
+                  
+                  <div className="bg-white rounded-lg shadow-sm p-4">
+                    <h3 className="font-bold text-gray-900 mb-3">Events (7)</h3>
+                    <div className="space-y-2">
+                      {['Accessibility Workshop - Tomorrow', 'Community Meetup - Friday', 'Support Group - Sunday', 'Tech Talk - Next Week', 'Social Mixer - Monthly', 'Yoga for Disabilities - Daily', 'Career Fair - Next Month'].map((event, idx) => (
+                        <div key={idx} className="p-2 hover:bg-gray-50 rounded-lg cursor-pointer">
+                          <div className="font-medium text-sm">{event}</div>
+                          <div className="text-xs text-gray-500">Click for details</div>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="mt-3 text-sm text-blue-500 cursor-pointer hover:text-blue-600">
+                      Create event +
+                    </div>
+                  </div>
+                  
+                  <div className="bg-white rounded-lg shadow-sm p-4">
+                    <h3 className="font-bold text-gray-900 mb-3">Memories (6)</h3>
+                    <div className="space-y-2">
+                      {['1 year ago: Joined AbilityConnect', '6 months ago: First post', '3 months ago: Reached 100 friends', '2 months ago: Started support group', '1 month ago: Helped organize event', '2 weeks ago: Featured in newsletter'].map((memory, idx) => (
+                        <div key={idx} className="p-2 hover:bg-gray-50 rounded-lg cursor-pointer">
+                          <div className="text-sm">{memory}</div>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="mt-3 text-sm text-blue-500 cursor-pointer hover:text-blue-600">
+                      See more memories →
+                    </div>
+                  </div>
+                  
+                  <div className="bg-white rounded-lg shadow-sm p-4">
+                    <h3 className="font-bold text-gray-900 mb-3">Saved Items (8)</h3>
+                    <div className="space-y-2">
+                      {['Accessibility Guide.pdf', 'Event Calendar', 'Resource List', 'Contact Directory', 'Workshop Slides', 'Accessibility Checklist', 'Volunteer Schedule', 'Grant Opportunities'].map((item, idx) => (
+                        <div key={idx} className="p-2 hover:bg-gray-50 rounded-lg cursor-pointer">
+                          <div className="text-sm">{item}</div>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="mt-3 text-sm text-blue-500 cursor-pointer hover:text-blue-600">
+                      View all saved →
+                    </div>
+                  </div>
+                  
+                  {/* Additional section for more scroll */}
+                  <div className="bg-white rounded-lg shadow-sm p-4">
+                    <h3 className="font-bold text-gray-900 mb-3">Shortcuts (6)</h3>
+                    <div className="space-y-2">
+                      {['Live Videos', 'Marketplace', 'Gaming', 'Fundraisers', 'Climate Center', 'Weather'].map((shortcut, idx) => (
+                        <div key={idx} className="p-2 hover:bg-gray-50 rounded-lg cursor-pointer">
+                          <div className="text-sm">{shortcut}</div>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Middle Feed - Independently Scrollable */}
-            <div className="lg:col-span-2 h-full flex flex-col">
-              <div className="flex-shrink-0">
-                <FacebookStoriesBar />
-                <FacebookCreatePost />
-              </div>
-              <div className="flex-1 overflow-y-auto mt-4 pr-2">
-                {/* Posts - Scroll independently */}
-                <div className="space-y-6 pb-6">
+            {/* COLUMN 2: MIDDLE FEED - INDEPENDENT SCROLL CONTAINER */}
+            {/* FIXED: Simple container with overflow-y-auto */}
+            <div className="lg:col-span-2">
+              {/* SIMPLE SCROLL CONTAINER - NO FLEX, NO FLEX-COL */}
+              <div className="h-[calc(100vh-120px)] overflow-y-auto">
+                {/* Fixed top part */}
+                <div className="space-y-4 mb-4">
+                  <FacebookStoriesBar />
+                  <FacebookCreatePost />
+                </div>
+                
+                {/* Scrollable content - SIMPLE DIV */}
+                <div className="space-y-6 pb-8">
                   {posts.map((post) => (
                     <FacebookPost key={post.id} post={post} />
                   ))}
                   
-                  {/* Add more sample posts for scrolling */}
-                  {[4, 5, 6].map((id) => (
-                    <div key={id} className="bg-white rounded-lg shadow-sm p-6">
-                      <div className="flex items-center space-x-3 mb-4">
-                        <div className="w-10 h-10 bg-gray-200 rounded-full"></div>
-                        <div>
-                          <div className="font-bold text-gray-900">Sample User {id}</div>
-                          <div className="text-sm text-gray-500">2 days ago</div>
-                        </div>
-                      </div>
-                      <p className="text-gray-800">Sample post content for scrolling demonstration #{id}.</p>
-                    </div>
-                  ))}
+                  {/* Loading indicator at bottom */}
+                  <div className="text-center py-4">
+                    <div className="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+                    <p className="mt-2 text-sm text-gray-500">Loading more posts...</p>
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Right Sidebar - Independently Scrollable */}
-            <div className="lg:col-span-1 h-full">
-              <div className="h-full overflow-y-auto pr-2">
-                <div className="space-y-4">
-                  <div className="bg-white rounded-lg shadow-sm p-4 sticky top-0 z-10">
-                    <h3 className="font-bold text-gray-900 mb-4">Sponsored</h3>
+            {/* COLUMN 3: RIGHT SIDEBAR - INDEPENDENT SCROLL CONTAINER */}
+            <div className="lg:col-span-1">
+              {/* SCROLL CONTAINER WITH FIXED HEIGHT */}
+              <div className="h-[calc(100vh-120px)] overflow-y-auto">
+                <div className="space-y-4 pb-8">
+                  <div className="bg-white rounded-lg shadow-sm p-4">
+                    <h3 className="font-bold text-gray-900 mb-4">Sponsored (3)</h3>
                     <div className="space-y-4">
                       <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-4">
                         <div className="font-bold text-blue-600 mb-1">Accessibility Tools</div>
@@ -273,13 +504,18 @@ function DashboardContent() {
                         <p className="text-sm text-gray-600 mb-2">Join our monthly support meetings</p>
                         <button className="text-sm text-green-500 hover:text-green-600">See Events →</button>
                       </div>
+                      <div className="bg-gradient-to-r from-orange-50 to-red-50 rounded-lg p-4">
+                        <div className="font-bold text-orange-600 mb-1">Volunteer Opportunities</div>
+                        <p className="text-sm text-gray-600 mb-2">Help make a difference in your community</p>
+                        <button className="text-sm text-orange-500 hover:text-orange-600">Sign Up →</button>
+                      </div>
                     </div>
                   </div>
                   
                   <div className="bg-white rounded-lg shadow-sm p-4">
-                    <h3 className="font-bold text-gray-900 mb-4">Online Friends</h3>
+                    <h3 className="font-bold text-gray-900 mb-4">Online Friends (15)</h3>
                     <div className="space-y-3">
-                      {['Sarah Johnson', 'Mike Chen', 'Emma Wilson', 'David Brown', 'Lisa Taylor'].map((friend, idx) => (
+                      {['Sarah Johnson', 'Mike Chen', 'Emma Wilson', 'David Brown', 'Lisa Taylor', 'Alex Garcia', 'Maria Rodriguez', 'James Wilson', 'Sophia Lee', 'Thomas Kim', 'Kevin Martin', 'Olivia Davis', 'Brian Clark', 'Rachel White', 'Daniel Moore'].map((friend, idx) => (
                         <div key={idx} className="flex items-center justify-between">
                           <div className="flex items-center space-x-2">
                             <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
@@ -291,10 +527,13 @@ function DashboardContent() {
                         </div>
                       ))}
                     </div>
+                    <div className="mt-3 text-sm text-blue-500 cursor-pointer hover:text-blue-600">
+                      See all friends →
+                    </div>
                   </div>
                   
                   <div className="bg-white rounded-lg shadow-sm p-4">
-                    <h3 className="font-bold text-gray-900 mb-4">Recent Activity</h3>
+                    <h3 className="font-bold text-gray-900 mb-4">Recent Activity (10)</h3>
                     <div className="space-y-3">
                       <div className="flex items-center space-x-2 text-sm">
                         <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
@@ -314,16 +553,163 @@ function DashboardContent() {
                         </div>
                         <span>You joined Accessibility Devs</span>
                       </div>
+                      <div className="flex items-center space-x-2 text-sm">
+                        <div className="w-6 h-6 bg-yellow-100 rounded-full flex items-center justify-center">
+                          <span className="text-yellow-600">🎂</span>
+                        </div>
+                        <span>It\'s Emma\'s birthday today</span>
+                      </div>
+                      <div className="flex items-center space-x-2 text-sm">
+                        <div className="w-6 h-6 bg-red-100 rounded-full flex items-center justify-center">
+                          <span className="text-red-600">📅</span>
+                        </div>
+                        <span>Event reminder: Workshop tomorrow</span>
+                      </div>
+                      <div className="flex items-center space-x-2 text-sm">
+                        <div className="w-6 h-6 bg-pink-100 rounded-full flex items-center justify-center">
+                          <span className="text-pink-600">📸</span>
+                        </div>
+                        <span>Lisa posted a new photo</span>
+                      </div>
+                      <div className="flex items-center space-x-2 text-sm">
+                        <div className="w-6 h-6 bg-indigo-100 rounded-full flex items-center justify-center">
+                          <span className="text-indigo-600">🎥</span>
+                        </div>
+                        <span>David went live</span>
+                      </div>
+                      <div className="flex items-center space-x-2 text-sm">
+                        <div className="w-6 h-6 bg-teal-100 rounded-full flex items-center justify-center">
+                          <span className="text-teal-600">📝</span>
+                        </div>
+                        <span>You updated your profile</span>
+                      </div>
+                      <div className="flex items-center space-x-2 text-sm">
+                        <div className="w-6 h-6 bg-rose-100 rounded-full flex items-center justify-center">
+                          <span className="text-rose-600">❤️</span>
+                        </div>
+                        <span>Maria reacted to your story</span>
+                      </div>
+                      <div className="flex items-center space-x-2 text-sm">
+                        <div className="w-6 h-6 bg-amber-100 rounded-full flex items-center justify-center">
+                          <span className="text-amber-600">🏆</span>
+                        </div>
+                        <span>You earned a new badge</span>
+                      </div>
                     </div>
                   </div>
                   
                   <div className="bg-white rounded-lg shadow-sm p-4">
-                    <h3 className="font-bold text-gray-900 mb-4">Trending Topics</h3>
+                    <h3 className="font-bold text-gray-900 mb-4">Trending Topics (10)</h3>
                     <div className="space-y-2">
-                      {['#Accessibility', '#DisabilityRights', '#InclusiveDesign', '#AssistiveTech'].map((topic, idx) => (
+                      {['#Accessibility', '#DisabilityRights', '#InclusiveDesign', '#AssistiveTech', '#Community', '#Support', '#MentalHealth', '#Caregivers', '#AccessibleTravel', '#DeafCulture'].map((topic, idx) => (
                         <div key={idx} className="flex justify-between items-center p-2 hover:bg-gray-50 rounded-lg cursor-pointer">
                           <span className="text-sm text-blue-600">{topic}</span>
-                          <span className="text-xs text-gray-500">24 posts</span>
+                          <span className="text-xs text-gray-500">{Math.floor(Math.random() * 100 + 50)} posts</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  <div className="bg-white rounded-lg shadow-sm p-4">
+                    <h3 className="font-bold text-gray-900 mb-4">Birthdays (8)</h3>
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-2">
+                          <div className="w-8 h-8 bg-pink-100 rounded-full flex items-center justify-center">
+                            <span className="text-pink-600">🎂</span>
+                          </div>
+                          <span className="text-sm">Emma Wilson</span>
+                        </div>
+                        <span className="text-xs text-gray-500">Today</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-2">
+                          <div className="w-8 h-8 bg-pink-100 rounded-full flex items-center justify-center">
+                            <span className="text-pink-600">🎂</span>
+                          </div>
+                          <span className="text-sm">Alex Garcia</span>
+                        </div>
+                        <span className="text-xs text-gray-500">Tomorrow</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-2">
+                          <div className="w-8 h-8 bg-pink-100 rounded-full flex items-center justify-center">
+                            <span className="text-pink-600">🎂</span>
+                          </div>
+                          <span className="text-sm">Lisa Taylor</span>
+                        </div>
+                        <span className="text-xs text-gray-500">In 3 days</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-2">
+                          <div className="w-8 h-8 bg-pink-100 rounded-full flex items-center justify-center">
+                            <span className="text-pink-600">🎂</span>
+                          </div>
+                          <span className="text-sm">Michael Brown</span>
+                        </div>
+                        <span className="text-xs text-gray-500">In 5 days</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-2">
+                          <div className="w-8 h-8 bg-pink-100 rounded-full flex items-center justify-center">
+                            <span className="text-pink-600">🎂</span>
+                          </div>
+                          <span className="text-sm">Sarah Johnson</span>
+                        </div>
+                        <span className="text-xs text-gray-500">In 1 week</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-2">
+                          <div className="w-8 h-8 bg-pink-100 rounded-full flex items-center justify-center">
+                            <span className="text-pink-600">🎂</span>
+                          </div>
+                          <span className="text-sm">David Miller</span>
+                        </div>
+                        <span className="text-xs text-gray-500">In 10 days</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-2">
+                          <div className="w-8 h-8 bg-pink-100 rounded-full flex items-center justify-center">
+                            <span className="text-pink-600">🎂</span>
+                          </div>
+                          <span className="text-sm">Olivia Davis</span>
+                        </div>
+                        <span className="text-xs text-gray-500">In 2 weeks</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-2">
+                          <div className="w-8 h-8 bg-pink-100 rounded-full flex items-center justify-center">
+                            <span className="text-pink-600">🎂</span>
+                          </div>
+                          <span className="text-sm">Brian Clark</span>
+                        </div>
+                        <span className="text-xs text-gray-500">In 3 weeks</span>
+                      </div>
+                    </div>
+                    <div className="mt-3 text-sm text-blue-500 cursor-pointer hover:text-blue-600">
+                      See all birthdays →
+                    </div>
+                  </div>
+                  
+                  <div className="bg-white rounded-lg shadow-sm p-4">
+                    <h3 className="font-bold text-gray-900 mb-4">Quick Links (8)</h3>
+                    <div className="space-y-2">
+                      {['Help Center', 'Accessibility Settings', 'Privacy Checkup', 'Report a Problem', 'Suggest a Feature', 'Terms of Service', 'Community Guidelines', 'Cookie Policy'].map((link, idx) => (
+                        <div key={idx} className="p-2 hover:bg-gray-50 rounded-lg cursor-pointer">
+                          <div className="text-sm">{link}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  {/* Additional section for more scroll */}
+                  <div className="bg-white rounded-lg shadow-sm p-4">
+                    <h3 className="font-bold text-gray-900 mb-4">Suggested Groups (6)</h3>
+                    <div className="space-y-2">
+                      {['Accessible Travel Enthusiasts', 'Disability Tech Innovators', 'Mental Health Support', 'Caregiver Network', 'Deaf and Hard of Hearing', 'Visual Impairment Tech'].map((group, idx) => (
+                        <div key={idx} className="p-2 hover:bg-gray-50 rounded-lg cursor-pointer">
+                          <div className="text-sm">{group}</div>
+                          <div className="text-xs text-gray-500">Join group</div>
                         </div>
                       ))}
                     </div>
@@ -332,7 +718,7 @@ function DashboardContent() {
               </div>
             </div>
           </div>
-        </main>
+        </div>
       </div>
 
       {/* User Profile Modal */}
