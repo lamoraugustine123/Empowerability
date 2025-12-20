@@ -8,6 +8,7 @@ import FacebookStoriesBar from './components/FacebookStoriesBar';
 import FacebookCreatePost from './components/FacebookCreatePost';
 import FacebookPost from './components/FacebookPost';
 import UserProfileModal from './components/UserProfileModal';
+import ProfileButton from '../components/ProfileButton';
 
 // Loading component
 function LoadingSpinner() {
@@ -323,10 +324,6 @@ function DashboardContent() {
     return () => clearTimeout(timer);
   }, [router, authChecked]);
 
-  const handleUserProfileClick = () => {
-    setIsProfileModalOpen(true);
-  };
-
   if (isLoading) {
     return <LoadingSpinner />;
   }
@@ -355,15 +352,7 @@ function DashboardContent() {
               </div>
 
               <div className="flex items-center space-x-4">
-                <button 
-                  onClick={handleUserProfileClick}
-                  className="flex items-center space-x-2 bg-gray-100 hover:bg-gray-200 px-3 py-2 rounded-full transition-colors"
-                >
-                  <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold">
-                    {user?.name?.charAt(0) || 'U'}
-                  </div>
-                  <span className="hidden md:inline font-medium">{user?.name?.split(' ')[0] || 'User'}</span>
-                </button>
+                <ProfileButton user={user} />
               </div>
             </div>
           </div>
@@ -377,10 +366,10 @@ function DashboardContent() {
             {/* COLUMN 1: LEFT SIDEBAR - INDEPENDENT SCROLL CONTAINER */}
             <div className="lg:col-span-1">
               {/* SCROLL CONTAINER WITH FIXED HEIGHT */}
-              <div className="h-[calc(100vh-120px)] overflow-y-auto">
+              <div className="h-[calc(100vh-120px)] overflow-y-auto dashboard-scroll-container">
                 {/* Fixed top part */}
                 <div className="mb-4">
-                  <FacebookSidebar onUserProfileClick={handleUserProfileClick} />
+                  <FacebookSidebar />
                 </div>
                 
                 {/* Scrollable content */}
@@ -464,7 +453,7 @@ function DashboardContent() {
             {/* FIXED: Simple container with overflow-y-auto */}
             <div className="lg:col-span-2">
               {/* SIMPLE SCROLL CONTAINER - NO FLEX, NO FLEX-COL */}
-              <div className="h-[calc(100vh-120px)] overflow-y-auto">
+              <div className="h-[calc(100vh-120px)] overflow-y-auto dashboard-scroll-container">
                 {/* Fixed top part */}
                 <div className="space-y-4 mb-4">
                   <FacebookStoriesBar />
@@ -489,7 +478,7 @@ function DashboardContent() {
             {/* COLUMN 3: RIGHT SIDEBAR - INDEPENDENT SCROLL CONTAINER */}
             <div className="lg:col-span-1">
               {/* SCROLL CONTAINER WITH FIXED HEIGHT */}
-              <div className="h-[calc(100vh-120px)] overflow-y-auto">
+              <div className="h-[calc(100vh-120px)] overflow-y-auto dashboard-scroll-container">
                 <div className="space-y-4 pb-8">
                   <div className="bg-white rounded-lg shadow-sm p-4">
                     <h3 className="font-bold text-gray-900 mb-4">Sponsored (3)</h3>
